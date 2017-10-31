@@ -17,7 +17,7 @@ The game-summary parameter will show you short write ups about each of the games
 
 Some example output from the "games" parameter would be the following:
 
-ONGOING GAMES:
+    ONGOING GAMES:
 
 	BOS Celtics VS Spurs SAS       66:56    3rd Qtr
 		Kyrie Irving: 24 PTS, LaMarcus Aldridge: 11 PTS
@@ -50,7 +50,7 @@ ONGOING GAMES:
 		Dion Waiters: 3 ASTS, Jeff Teague: 7 ASTS
 
 
-UPCOMING GAMES TODAY:
+    UPCOMING GAMES TODAY:
 
 	POR Trail Blazers VS Raptors TOR       10:00 PM ET
 
