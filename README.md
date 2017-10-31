@@ -8,6 +8,8 @@ Then, just save main.py whever you want on your local machine and run:
     python main.py --lookup="game-summary"
     
     python main.py --lookup="games"
+    
+    python main.py --lookup="print-lead-summary"
 
 
 The games parameter will show you today's games, as well as live scores for those games.
@@ -57,3 +59,8 @@ Some example output from the "games" parameter would be the following:
 	UTA Jazz VS Mavericks DAL       09:00 PM ET
 
 	LAC Clippers VS Warriors GSW       10:30 PM ET
+
+
+And if you were to enter the print-lead-summary command the following is some example output:
+
+    
