@@ -5,12 +5,20 @@ import datetime
 
 
 class NBAGame:
-	def __init__(self, home_team, away_team, home_score, away_score, state):
+	def __init__(self, home_team, away_team, home_score, away_score, state, home_team_top_scorer="", home_team_top_assister="", home_team_top_rebounder="", away_team_top_scorer="", away_team_top_assister="", away_team_top_rebounder=""):
 		self.home_team = home_team
 		self.away_team = away_team
 		self.home_score = home_score
 		self.away_score = away_score
 		self.state = state
+
+		self.home_team_top_scorer = home_team_top_scorer
+		self.home_team_top_assister = home_team_top_assister
+		self.home_team_top_rebounder = home_team_top_rebounder
+
+		self.away_team_top_scorer = away_team_top_scorer
+		self.away_team_top_assister = away_team_top_assister
+		self.away_team_top_rebounder = away_team_top_rebounder
 
 #For full NBA schedule: http://data.nba.com/data/10s/v2015/json/mobile_teams/nba/2017/league/00_full_schedule_week.json
 
@@ -39,17 +47,50 @@ def main_method(lookup, name):
 			final_score = str(game['h']['s']) + " : " + str(game['v']['s'])
 			#print(home_team + " VS " + away_team + "       " + final_score)
 			if game['stt'] == 'Final':
-				final_games.append(NBAGame(home_team, away_team, game['h']['s'], game['v']['s'], game['stt']))
+				score_leaders_url = "http://stats.nba.com/js/data/widgets/scores_leaders.json"
+				r_score_leaders = requests.get(score_leaders_url)
+				d_score_leaders = json.loads(r_score_leaders.content)
+
+				game_object = NBAGame(home_team, away_team, game['h']['s'], game['v']['s'], game['stt'])
+				for game_stats in d_score_leaders['items'][0]['items'][0]['playergametats']:
+					if game_stats['GAME_ID'] == game['gid'] and game_stats['TEAM_ABBREVIATION'] == game['h']['ta']:
+						game_object.home_team_top_scorer = game_stats['PTS_PLAYER_NAME'] + "::" + game_stats['PTS']
+						game_object.home_team_top_rebounder = game_stats['REB_PLAYER_NAME'] + "::" + game_stats['REB']
+						game_object.home_team_top_assister = game_stats['AST_PLAYER_NAME'] + "::" + game_stats['AST']
+					elif game_stats['GAME_ID'] == game['gid'] and game_stats['TEAM_ABBREVIATION'] == game['v']['ta']:
+						game_object.away_team_top_scorer = game_stats['PTS_PLAYER_NAME'] + "::" + game_stats['PTS']
+						game_object.away_team_top_rebounder = game_stats['REB_PLAYER_NAME'] + "::" + game_stats['REB']
+						game_object.away_team_top_assister = game_stats['AST_PLAYER_NAME'] + "::" + game_stats['AST']
+				
+				final_games.append(game_object)
 			elif len(game['stt'].split(" ")) == 3:
 				pre_games.append(NBAGame(home_team, away_team, game['h']['s'], game['v']['s'], game['stt']))
 			else:
-				ongoing_games.append(NBAGame(home_team, away_team, game['h']['s'], game['v']['s'], game['stt']))
+				score_leaders_url = "http://stats.nba.com/js/data/widgets/scores_leaders.json"
+				r_score_leaders = requests.get(score_leaders_url)
+				d_score_leaders = json.loads(r_score_leaders.content)
+
+				game_object = NBAGame(home_team, away_team, game['h']['s'], game['v']['s'], game['stt'])
+				for game_stats in d_score_leaders['items'][0]['items'][0]['playergametats']:
+					if game_stats['GAME_ID'] == game['gid'] and game_stats['TEAM_ABBREVIATION'] == game['h']['ta']:
+						game_object.home_team_top_scorer = game_stats['PTS_PLAYER_NAME'] + ": " + str(game_stats['PTS'])
+						game_object.home_team_top_rebounder = game_stats['REB_PLAYER_NAME'] + ": " + str(game_stats['REB'])
+						game_object.home_team_top_assister = game_stats['AST_PLAYER_NAME'] + ": " + str(game_stats['AST'])
+					elif game_stats['GAME_ID'] == game['gid'] and game_stats['TEAM_ABBREVIATION'] == game['v']['ta']:
+						game_object.away_team_top_scorer = game_stats['PTS_PLAYER_NAME'] + ": " + str(game_stats['PTS'])
+						game_object.away_team_top_rebounder = game_stats['REB_PLAYER_NAME'] + ": " + str(game_stats['REB'])
+						game_object.away_team_top_assister = game_stats['AST_PLAYER_NAME'] + ": " + str(game_stats['AST'])
+				
+				ongoing_games.append(game_object)
 		
 		if len(ongoing_games) > 0:
 			print("ONGOING GAMES:")
 			print("")
 			for game in ongoing_games:
 				print(("\t" + game.home_team + " VS " + game.away_team + "       " + str(game.home_score) + ":" + str(game.away_score) + "    " + game.state))
+				print("\t\t" + game.home_team_top_scorer + " PTS, " + game.away_team_top_scorer + " PTS")
+				print("\t\t" + game.home_team_top_rebounder + " REBS, " + game.away_team_top_rebounder + " REBS")
+				print("\t\t" + game.home_team_top_assister + " ASTS, " + game.away_team_top_assister + " ASTS")
 				print("")
 			print("")
 
