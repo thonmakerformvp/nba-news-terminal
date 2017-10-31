@@ -78,8 +78,8 @@ And if you were to enter the print-lead-summary command the following is some ex
                                                                                                                                                
                                                                                                                                                
                                                                                                                                                
-          # #                                                                                                                                  
-    #      # #                                                                                                                                  
+              # #                                                                                                                                  
+       #      # #                                                                                                                                  
     #####    #####                                                                                                                                 
     #####    #####                                                                                                                                 
     ---------------------------------Q2-----------------------------------------Q3------------------------------Q4---------------------------------
@@ -100,3 +100,4 @@ And if you were to enter the print-lead-summary command the following is some ex
                                                                                                                       ############## #     ####
                                                                                                                        # ########### #      ###
                                                                                                                          # # # #  #           #
+    
