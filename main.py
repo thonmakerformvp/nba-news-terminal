@@ -3,6 +3,7 @@ import json
 import requests
 import datetime
 
+
 class NBAGame:
 	def __init__(self, home_team, away_team, home_score, away_score, state):
 		self.home_team = home_team
@@ -37,10 +38,9 @@ def main_method(lookup, name):
 			away_team = game['v']['tn'] + " " + game['v']['ta']
 			final_score = str(game['h']['s']) + " : " + str(game['v']['s'])
 			#print(home_team + " VS " + away_team + "       " + final_score)
-			#print(game['stt'])
 			if game['stt'] == 'Final':
 				final_games.append(NBAGame(home_team, away_team, game['h']['s'], game['v']['s'], game['stt']))
-			elif game['stt'] == "Pre":
+			elif len(game['stt'].split(" ")) == 3:
 				pre_games.append(NBAGame(home_team, away_team, game['h']['s'], game['v']['s'], game['stt']))
 			else:
 				ongoing_games.append(NBAGame(home_team, away_team, game['h']['s'], game['v']['s'], game['stt']))
@@ -64,7 +64,7 @@ def main_method(lookup, name):
 			print("UPCOMING GAMES TODAY:")
 			print("")
 			for game in pre_games:
-				print(("\t" + game.home_team + " VS " + game.away_team + "       " + str(game.home_score) + ":" + str(game.away_score)))
+				print(("\t" + game.home_team + " VS " + game.away_team + "       " + str(game.state)))
 				print("")
 			print("")
 
@@ -83,7 +83,6 @@ def main_method(lookup, name):
 				print('')
 				print('')
 				print('')
-
 
 	'''elif lookup.split(" ")[0] == 'boxscore':
 		print("GRRR")
