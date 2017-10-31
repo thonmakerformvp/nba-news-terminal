@@ -3,6 +3,51 @@ import json
 import requests
 import datetime
 
+def draw_lead_tracker(date, game_id):
+	q1_url = "https://data.nba.net/data/10s/prod/v1/" + date + "/" + game_id + '_lead_tracker_1.json'
+	q1_r = requests.get(q1_url)
+	q1_d = json.loads(q1_r.content)
+
+	q2_url = "https://data.nba.net/data/10s/prod/v1/" + date + "/" + game_id + '_lead_tracker_2.json'
+	q2_r = requests.get(q2_url)
+	q2_d = json.loads(q2_r.content)
+
+	q3_url = "https://data.nba.net/data/10s/prod/v1/" + date + "/" + game_id + '_lead_tracker_3.json'
+	q3_r = requests.get(q3_url)
+	q3_d = json.loads(q3_r.content)
+
+	q4_url = "https://data.nba.net/data/10s/prod/v1/" + date + "/" + game_id + '_lead_tracker_4.json'
+	q4_r = requests.get(q4_url)
+	q4_d = json.loads(q4_r.content)
+
+	all_plays = q1_d['plays'] + q2_d['plays'] + q3_d['plays'] + q4_d['plays']
+
+	max_lead = 0
+	for play in all_plays:
+		if int(play['points']) > max_lead:
+			max_lead = int(play['points'])
+
+	height_of_chart = 36
+
+	top_team_id = all_plays[0]['leadTeamId']
+
+	for iii in range(0, height_of_chart):
+		if iii == height_of_chart / 2:
+			print("---------------------------------------------------------")
+		for play in all_plays:
+			if play['leadTeamId'] == top_team_id and iii < (height_of_chart/2):
+				height_of_lead_this_play_in_lines = (float(play['points']) / float(max_lead)) * float((height_of_chart / 2))
+				if height_of_chart / 2 - iii <= height_of_lead_this_play_in_lines:
+					print("#", end="")
+				else:
+					print(" ", end="")
+			elif play['leadTeamId'] != top_team_id and iii >= (height_of_chart/2):
+				height_of_lead_this_play_in_lines = (float(play['points']) / float(max_lead)) * float((height_of_chart / 2))
+				if iii - (height_of_chart/2) <= height_of_lead_this_play_in_lines:
+					print("#", end="")
+				else:
+					print(" ", end="")
+		print("\n")
 
 class NBAGame:
 	def __init__(self, home_team, away_team, home_score, away_score, state, home_team_top_scorer="", home_team_top_assister="", home_team_top_rebounder="", away_team_top_scorer="", away_team_top_assister="", away_team_top_rebounder=""):
@@ -54,13 +99,13 @@ def main_method(lookup, name):
 				game_object = NBAGame(home_team, away_team, game['h']['s'], game['v']['s'], game['stt'])
 				for game_stats in d_score_leaders['items'][0]['items'][0]['playergametats']:
 					if game_stats['GAME_ID'] == game['gid'] and game_stats['TEAM_ABBREVIATION'] == game['h']['ta']:
-						game_object.home_team_top_scorer = game_stats['PTS_PLAYER_NAME'] + "::" + game_stats['PTS']
-						game_object.home_team_top_rebounder = game_stats['REB_PLAYER_NAME'] + "::" + game_stats['REB']
-						game_object.home_team_top_assister = game_stats['AST_PLAYER_NAME'] + "::" + game_stats['AST']
+						game_object.home_team_top_scorer = game_stats['PTS_PLAYER_NAME'] + "::" + str(game_stats['PTS'])
+						game_object.home_team_top_rebounder = game_stats['REB_PLAYER_NAME'] + "::" + str(game_stats['REB'])
+						game_object.home_team_top_assister = game_stats['AST_PLAYER_NAME'] + "::" + str(game_stats['AST'])
 					elif game_stats['GAME_ID'] == game['gid'] and game_stats['TEAM_ABBREVIATION'] == game['v']['ta']:
-						game_object.away_team_top_scorer = game_stats['PTS_PLAYER_NAME'] + "::" + game_stats['PTS']
-						game_object.away_team_top_rebounder = game_stats['REB_PLAYER_NAME'] + "::" + game_stats['REB']
-						game_object.away_team_top_assister = game_stats['AST_PLAYER_NAME'] + "::" + game_stats['AST']
+						game_object.away_team_top_scorer = game_stats['PTS_PLAYER_NAME'] + "::" + str(game_stats['PTS'])
+						game_object.away_team_top_rebounder = game_stats['REB_PLAYER_NAME'] + "::" + str(game_stats['REB'])
+						game_object.away_team_top_assister = game_stats['AST_PLAYER_NAME'] + "::" + str(game_stats['AST'])
 				
 				final_games.append(game_object)
 			elif len(game['stt'].split(" ")) == 3:
@@ -124,7 +169,8 @@ def main_method(lookup, name):
 				print('')
 				print('')
 				print('')
-
+	elif lookup == 'print-lead-summary':
+		draw_lead_tracker('20171030', '0021700098')
 	'''elif lookup.split(" ")[0] == 'boxscore':
 		print("GRRR")
 		home_team_symbol = lookup.split(" ")[1].split(":")[0]
@@ -151,4 +197,8 @@ def main_method(lookup, name):
 
 if __name__ == '__main__':
 	main_method()
+
+
+
+
 
