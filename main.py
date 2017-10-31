@@ -32,22 +32,52 @@ def draw_lead_tracker(date, game_id):
 	top_team_id = all_plays[0]['leadTeamId']
 
 	for iii in range(0, height_of_chart):
-		if iii == height_of_chart / 2:
-			print("---------------------------------------------------------")
 		for play in all_plays:
-			if play['leadTeamId'] == top_team_id and iii < (height_of_chart/2):
-				height_of_lead_this_play_in_lines = (float(play['points']) / float(max_lead)) * float((height_of_chart / 2))
-				if height_of_chart / 2 - iii <= height_of_lead_this_play_in_lines:
+			if play['leadTeamId'] == top_team_id and iii <= (height_of_chart/2):
+				height_of_lead_this_play_in_lines = (int(play['points']) / max_lead) * (height_of_chart / 2)
+				if height_of_chart / 2 - iii < height_of_lead_this_play_in_lines:
 					print("#", end="")
 				else:
 					print(" ", end="")
-			elif play['leadTeamId'] != top_team_id and iii >= (height_of_chart/2):
+			elif play['leadTeamId'] != top_team_id and iii > (height_of_chart/2):
 				height_of_lead_this_play_in_lines = (float(play['points']) / float(max_lead)) * float((height_of_chart / 2))
-				if iii - (height_of_chart/2) <= height_of_lead_this_play_in_lines:
+				if iii - (height_of_chart/2) < height_of_lead_this_play_in_lines:
 					print("#", end="")
 				else:
 					print(" ", end="")
-		print("\n")
+			else:
+				print(" ", end="")
+			'''else:
+				print("YOU FCUKED UP U FUCKING IDIOT")
+				print(iii)
+				print(type(iii))
+				print(type(height_of_chart/2))
+				print(height_of_chart/2)
+				print(play['leadTeamId'])
+				print(top_team_id)
+				print(type(play['leadTeamId']))
+				print(type(top_team_id))
+				print('------')'''
+		if iii == height_of_chart / 2:
+			print("")
+			last_time = 20
+			quarter = 1
+			skip_next = False
+			for play in all_plays:
+				if int(play['clock'].split(':')[0]) > last_time:
+					quarter = quarter + 1
+					print('Q' + str(quarter), end='')
+					skip_next = True
+				else:
+					if skip_next == True:
+						skip_next = False
+					else:
+						print('-', end='')
+				last_time = int(play['clock'].split(':')[0])
+			print('')
+		else:
+			print("")
+
 
 class NBAGame:
 	def __init__(self, home_team, away_team, home_score, away_score, state, home_team_top_scorer="", home_team_top_assister="", home_team_top_rebounder="", away_team_top_scorer="", away_team_top_assister="", away_team_top_rebounder=""):
@@ -170,7 +200,7 @@ def main_method(lookup, name):
 				print('')
 				print('')
 	elif lookup == 'print-lead-summary':
-		draw_lead_tracker('20171030', '0021700098')
+		draw_lead_tracker('20171030', '0021700100')
 	'''elif lookup.split(" ")[0] == 'boxscore':
 		print("GRRR")
 		home_team_symbol = lookup.split(" ")[1].split(":")[0]
